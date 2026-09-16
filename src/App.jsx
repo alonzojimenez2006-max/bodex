@@ -11,13 +11,13 @@ function App() {
   const [logeado, setLogeado] = useState(false);
   const [esSuperAdmin, setEsSuperAdmin] = useState(false);
   const [vistaActual, setVistaActual] = useState('dashboard'); 
-  const [menuAbierto, setMenuAbierto] = useState(false); // 📱 Controla el menú móvil
+  const [menuAbierto, setMenuAbierto] = useState(false); 
 
-// Función para cambiar de vista y cerrar el menú automáticamente en celular
-const cambiarVista = (vista) => {
-  setVistaActual(vista);
-  setMenuAbierto(false); 
-};
+  // Función para cambiar de vista y cerrar el menú automáticamente en celular
+  const cambiarVista = (vista) => {
+    setVistaActual(vista);
+    setMenuAbierto(false); 
+  };
 
   // SuperAdmin Data
   const [listaBodegas, setListaBodegas] = useState([]);
@@ -218,7 +218,7 @@ const cambiarVista = (vista) => {
   const procesarRestock = async (e) => {
     e.preventDefault();
     const res = await fetchAPI('restock', 'POST', {
-      producto_id: parseInt(formRestock.producto_id), cantidad_sumار: parseInt(formRestock.cantidad_sumar),
+      producto_id: parseInt(formRestock.producto_id), cantidad_sumar: parseInt(formRestock.cantidad_sumar),
       precio_adquisicion: parseFloat(formRestock.precio_adquisicion), precio_venta: parseFloat(formRestock.precio_venta), tasa_aplicada: tasaGuardada
     });
     if (res.ok) { alert('Restock aplicado'); setFormRestock({ producto_id: '', cantidad_sumar: '', precio_adquisicion: '', precio_venta: '' }); cargarProductos(); }
@@ -315,40 +315,30 @@ const cambiarVista = (vista) => {
   if (esSuperAdmin) {
     return (
       <div className="layout-panel">
-        {/* Fondo oscuro para cerrar menú al tocar afuera en móvil */}
-    {/* Fondo oscuro para celular */}
-    <div className={`overlay-menu ${menuAbierto ? 'activo' : ''}`} onClick={() => setMenuAbierto(false)}></div>
-
-    <aside className={`sidebar ${menuAbierto ? 'abierta' : ''}`}>
-      <div className="sidebar-header">
-        <img src={logoBlanco} alt="Logo" className="sidebar-logo-main" />
-        <p style={{marginTop: '5px'}}>Tienda: {usuario}</p>
-      </div>
-      <nav className="sidebar-nav">
-        <button className={vistaActual==='dashboard'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('dashboard')}>📊 Dashboard</button>
-        <button className={vistaActual==='tasa'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('tasa')}>💵 Tasa Dólar</button>
-        <button className={vistaActual==='inventario'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('inventario')}>📦 Inventario</button>
-        <button className={vistaActual==='pos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('pos')}>🛒 Punto de Venta</button>
-        <button className={vistaActual==='simple'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('simple')}>💰 Transacción Simple</button>
-        <button className={vistaActual==='movimientos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('movimientos')}>📝 Movimientos</button>
-        <button className={vistaActual==='papelera'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('papelera')}>🗑️ Papelera</button>
-      </nav>
-      <div className="sidebar-footer"><button className="btn-logout" onClick={cerrarSesion}>Salir</button></div>
-    </aside>
-
-    <main className="panel-content">
         
-        {/* NUEVA BARRA SUPERIOR ELEGANTE (SOLO MÓVIL) */}
-        <div className="mobile-header">
-          <button className="hamburger-btn" onClick={() => setMenuAbierto(true)}>☰</button>
-          <h2 style={{ margin: 0, fontSize: '18px' }}>Bodex</h2>
-        </div>
+        {/* Fondo oscuro para cerrar menú al tocar afuera en móvil */}
+        <div className={`overlay-menu ${menuAbierto ? 'activo' : ''}`} onClick={() => setMenuAbierto(false)}></div>
 
-        <div className="modulo">
+        <aside className={`sidebar ${menuAbierto ? 'abierta' : ''}`}>
+          <div className="sidebar-header">
+            <img src={logoBlanco} alt="Logo" className="sidebar-logo-main" />
+            <p style={{marginTop: '5px'}}>Panel Maestro SaaS</p>
+          </div>
+          <nav className="sidebar-nav">
+            <button className="nav-btn activo" onClick={() => cambiarVista('dashboard')}>🏢 Gestión de Clientes</button>
+          </nav>
+          <div className="sidebar-footer"><button className="btn-logout" onClick={cerrarSesion}>Cerrar Sesión</button></div>
+        </aside>
+
+        <main className="panel-content">
+          
+          {/* EL BOTÓN GRANDE (SOLO VISIBLE EN MÓVIL) */}
+          <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Maestro</button>
+
+          <div className="modulo">
             <h2>🏢 Clientes Alquilados / Bodegas</h2>
             <p>Crea cuentas para tus clientes, controla sus estados (congelado por falta de pago) y gestiona fechas de cobro.</p>
 
-            {/* Formulario Crear Tienda */}
             <form onSubmit={crearNuevaTiendaAdmin} className="grid-form" style={{marginTop:'20px'}}>
               <input type="text" placeholder="Nombre de Tienda" className="input-field" value={formNuevaTienda.nombre_tienda} onChange={e=>setFormNuevaTienda({...formNuevaTienda, nombre_tienda: e.target.value})} required/>
               <input type="text" placeholder="Usuario Cliente" className="input-field" value={formNuevaTienda.usuario_admin} onChange={e=>setFormNuevaTienda({...formNuevaTienda, usuario_admin: e.target.value})} required/>
@@ -364,7 +354,7 @@ const cambiarVista = (vista) => {
                   <th>Usuario</th>
                   <th>Estado</th>
                   <th>Próximo Pago</th>
-                  <th>Acciones de Alquiler</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -408,30 +398,31 @@ const cambiarVista = (vista) => {
   // --- VISTA NORMAL DE TIENDA / CLIENTE ---
   return (
     <div className="layout-panel">
-      <aside className="sidebar">
+      
+      {/* Fondo oscuro para celular */}
+      <div className={`overlay-menu ${menuAbierto ? 'activo' : ''}`} onClick={() => setMenuAbierto(false)}></div>
+
+      <aside className={`sidebar ${menuAbierto ? 'abierta' : ''}`}>
         <div className="sidebar-header">
           <img src={logoBlanco} alt="Logo" className="sidebar-logo-main" />
           <p style={{marginTop: '5px'}}>Tienda: {usuario}</p>
         </div>
         <nav className="sidebar-nav">
-          <button className={vistaActual==='dashboard'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('dashboard')}>📊 Dashboard</button>
-          <button className={vistaActual==='tasa'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('tasa')}>💵 Tasa Dólar</button>
-          <button className={vistaActual==='inventario'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('inventario')}>📦 Inventario</button>
-          <button className={vistaActual==='pos'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('pos')}>🛒 Punto de Venta</button>
-          <button className={vistaActual==='simple'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('simple')}>💰 Transacción Simple</button>
-          <button className={vistaActual==='movimientos'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('movimientos')}>📝 Movimientos</button>
-          <button className={vistaActual==='papelera'?'nav-btn activo':'nav-btn'} onClick={()=>setVistaActual('papelera')}>🗑️ Papelera</button>
+          <button className={vistaActual==='dashboard'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('dashboard')}>📊 Dashboard</button>
+          <button className={vistaActual==='tasa'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('tasa')}>💵 Tasa Dólar</button>
+          <button className={vistaActual==='inventario'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('inventario')}>📦 Inventario</button>
+          <button className={vistaActual==='pos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('pos')}>🛒 Punto de Venta</button>
+          <button className={vistaActual==='simple'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('simple')}>💰 Transacción Simple</button>
+          <button className={vistaActual==='movimientos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('movimientos')}>📝 Movimientos</button>
+          <button className={vistaActual==='papelera'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('papelera')}>🗑️ Papelera</button>
         </nav>
         <div className="sidebar-footer"><button className="btn-logout" onClick={cerrarSesion}>Salir</button></div>
       </aside>
 
       <main className="panel-content">
         
-        {/* NUEVA BARRA SUPERIOR ELEGANTE (SOLO MÓVIL) */}
-        <div className="mobile-header">
-          <button className="hamburger-btn" onClick={() => setMenuAbierto(true)}>☰</button>
-          <h2 style={{ margin: 0, fontSize: '18px' }}>Bodex</h2>
-        </div>
+        {/* EL BOTÓN GRANDE (SOLO VISIBLE EN MÓVIL) */}
+        <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Bodex</button>
 
         {vistaActual === 'dashboard' && (
           <div className="modulo">
