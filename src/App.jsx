@@ -337,8 +337,14 @@ const cambiarVista = (vista) => {
     </aside>
 
     <main className="panel-content">
-      <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Bodex</button>
-      <div className="modulo">
+        
+        {/* NUEVA BARRA SUPERIOR ELEGANTE (SOLO MÓVIL) */}
+        <div className="mobile-header">
+          <button className="hamburger-btn" onClick={() => setMenuAbierto(true)}>☰</button>
+          <h2 style={{ margin: 0, fontSize: '18px' }}>Bodex</h2>
+        </div>
+
+        <div className="modulo">
             <h2>🏢 Clientes Alquilados / Bodegas</h2>
             <p>Crea cuentas para tus clientes, controla sus estados (congelado por falta de pago) y gestiona fechas de cobro.</p>
 
@@ -420,7 +426,13 @@ const cambiarVista = (vista) => {
       </aside>
 
       <main className="panel-content">
-        <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Bodex</button>
+        
+        {/* NUEVA BARRA SUPERIOR ELEGANTE (SOLO MÓVIL) */}
+        <div className="mobile-header">
+          <button className="hamburger-btn" onClick={() => setMenuAbierto(true)}>☰</button>
+          <h2 style={{ margin: 0, fontSize: '18px' }}>Bodex</h2>
+        </div>
+
         {vistaActual === 'dashboard' && (
           <div className="modulo">
             <h2>📊 Dashboard Financiero General</h2>
