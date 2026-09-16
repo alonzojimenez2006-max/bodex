@@ -445,13 +445,16 @@ body {
 /* Cuando la pantalla es menor a 768px (Teléfonos y Tablets) */
 @media (max-width: 768px) {
   .menu-toggle {
-    display: block; /* Muestra el botón de hamburguesa */
+    display: block !important; 
+    position: sticky;
+    top: 10px;
+    z-index: 900;
   }
   
   .sidebar {
     position: fixed;
     top: 0;
-    left: -100%; /* Oculto por defecto fuera de la pantalla */
+    left: -100%; 
     width: 260px;
     height: 100vh;
     z-index: 1000;
@@ -460,10 +463,9 @@ body {
   }
 
   .sidebar.abierta {
-    left: 0; /* Aparece deslizando */
+    left: 0; 
   }
 
-  /* Fondo semitransparente detrás del menú */
   .overlay-menu.activo {
     display: block;
     position: fixed;
@@ -475,7 +477,6 @@ body {
     z-index: 999;
   }
 
-  /* Estabiliza las columnas (las vuelve de 1 sola columna hacia abajo) */
   .dashboard-cards, 
   .dash-sections-grid, 
   .grid-form, 
