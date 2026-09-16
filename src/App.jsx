@@ -420,6 +420,7 @@ const cambiarVista = (vista) => {
       </aside>
 
       <main className="panel-content">
+        <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Bodex</button>
         {vistaActual === 'dashboard' && (
           <div className="modulo">
             <h2>📊 Dashboard Financiero General</h2>
