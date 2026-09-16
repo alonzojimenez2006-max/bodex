@@ -412,3 +412,81 @@ body {
   object-fit: contain;
   margin-bottom: 5px;
 }
+
+/* ========================================================= */
+/* 📱 ADAPTACIÓN PARA MÓVILES (RESPONSIVE & ESTABILIDAD)   */
+/* ========================================================= */
+
+.menu-toggle {
+  display: none;
+  background: #6a1b9a;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.overlay-menu {
+  display: none;
+}
+
+/* Evita que las tablas se salgan de la pantalla en móviles */
+.modulo {
+  overflow-x: auto;
+}
+
+/* Cuando la pantalla es menor a 768px (Teléfonos y Tablets) */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block; /* Muestra el botón de hamburguesa */
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Oculto por defecto fuera de la pantalla */
+    width: 260px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+  }
+
+  .sidebar.abierta {
+    left: 0; /* Aparece deslizando */
+  }
+
+  /* Fondo semitransparente detrás del menú */
+  .overlay-menu.activo {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+  }
+
+  /* Estabiliza las columnas (las vuelve de 1 sola columna hacia abajo) */
+  .dashboard-cards, 
+  .dash-sections-grid, 
+  .grid-form, 
+  .pos-grid {
+    grid-template-columns: 1fr !important;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .panel-content {
+    padding: 10px;
+  }
+}
