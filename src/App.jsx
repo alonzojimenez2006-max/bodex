@@ -242,6 +242,22 @@ function App() {
     setTotalPOS(totalPOS + parseFloat(prod.precio_venta));
   };
 
+  const disminuirDelCarrito = (prod) => {
+    const existe = carrito.find(item => item.id === prod.id);
+    if (existe && existe.cantidad > 1) {
+      setCarrito(carrito.map(item => item.id === prod.id ? { ...item, cantidad: item.cantidad - 1 } : item));
+      setTotalPOS(totalPOS - parseFloat(prod.precio_venta));
+    }
+  };
+
+  const eliminarDelCarrito = (prod) => {
+    const existe = carrito.find(item => item.id === prod.id);
+    if (existe) {
+      setCarrito(carrito.filter(item => item.id !== prod.id));
+      setTotalPOS(totalPOS - (parseFloat(existe.precio_venta) * existe.cantidad));
+    }
+  };
+
   const iniciarEscannerPOS = () => {
     setEscaneandoPOS(true);
     setTimeout(() => {
@@ -562,7 +578,24 @@ function App() {
                   <option value="Punto de Venta">Punto de Venta</option>
                 </select>
               </div>
-              <ul className="lista-carrito">{carrito.map(c => (<li key={c.id}>{c.nombre} (x{c.cantidad}) - ${(c.precio_venta * c.cantidad).toFixed(2)}</li>))}</ul>
+              <ul className="lista-carrito" style={{ padding: 0, listStyle: 'none' }}>
+                {carrito.map(c => (
+                  <li key={c.id} style={{ background: '#f9f9f9', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', marginBottom: '10px' }}>
+                      <span>{c.nombre}</span>
+                      <span style={{ color: '#008060' }}>${(c.precio_venta * c.cantidad).toFixed(2)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '14px', color: '#555', fontWeight: 'bold' }}>Cant: {c.cantidad}</span>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button type="button" onClick={() => disminuirDelCarrito(c)} style={{ background: '#fbc02d', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>-</button>
+                        <button type="button" onClick={() => agregarAlCarrito(c)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>+</button>
+                        <button type="button" onClick={() => eliminarDelCarrito(c)} style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>🗑️</button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
               <button onClick={procesarVenta} className="btn-cobrar">💳 COBRAR</button>
             </div>
           </div>
