@@ -444,11 +444,16 @@ body {
 
 /* Cuando la pantalla es menor a 768px (Teléfonos y Tablets) */
 @media (max-width: 768px) {
+  /* Botón 100% FIJO arriba en la pantalla */
   .menu-toggle {
     display: block !important; 
-    position: sticky;
-    top: 10px;
-    z-index: 900;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 0;
+    z-index: 9999;
   }
   
   .sidebar {
@@ -489,5 +494,6 @@ body {
   
   .panel-content {
     padding: 10px;
+    padding-top: 60px; /* Da espacio para que el menú fijo no tape el contenido */
   }
 }
