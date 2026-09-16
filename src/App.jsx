@@ -11,6 +11,13 @@ function App() {
   const [logeado, setLogeado] = useState(false);
   const [esSuperAdmin, setEsSuperAdmin] = useState(false);
   const [vistaActual, setVistaActual] = useState('dashboard'); 
+  const [menuAbierto, setMenuAbierto] = useState(false); // 📱 Controla el menú móvil
+
+// Función para cambiar de vista y cerrar el menú automáticamente en celular
+const cambiarVista = (vista) => {
+  setVistaActual(vista);
+  setMenuAbierto(false); 
+};
 
   // SuperAdmin Data
   const [listaBodegas, setListaBodegas] = useState([]);
@@ -308,19 +315,30 @@ function App() {
   if (esSuperAdmin) {
     return (
       <div className="layout-panel">
-        <aside className="sidebar">
-          <div className="sidebar-header">
-            <img src={logoBlanco} alt="Logo" className="sidebar-logo-main" />
-            <p style={{marginTop: '5px'}}>Panel Maestro SaaS</p>
-          </div>
-          <nav className="sidebar-nav">
-            <button className="nav-btn activo">🏢 Gestión de Clientes</button>
-          </nav>
-          <div className="sidebar-footer"><button className="btn-logout" onClick={cerrarSesion}>Cerrar Sesión</button></div>
-        </aside>
+        {/* Fondo oscuro para cerrar menú al tocar afuera en móvil */}
+    {/* Fondo oscuro para celular */}
+    <div className={`overlay-menu ${menuAbierto ? 'activo' : ''}`} onClick={() => setMenuAbierto(false)}></div>
 
-        <main className="panel-content">
-          <div className="modulo">
+    <aside className={`sidebar ${menuAbierto ? 'abierta' : ''}`}>
+      <div className="sidebar-header">
+        <img src={logoBlanco} alt="Logo" className="sidebar-logo-main" />
+        <p style={{marginTop: '5px'}}>Tienda: {usuario}</p>
+      </div>
+      <nav className="sidebar-nav">
+        <button className={vistaActual==='dashboard'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('dashboard')}>📊 Dashboard</button>
+        <button className={vistaActual==='tasa'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('tasa')}>💵 Tasa Dólar</button>
+        <button className={vistaActual==='inventario'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('inventario')}>📦 Inventario</button>
+        <button className={vistaActual==='pos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('pos')}>🛒 Punto de Venta</button>
+        <button className={vistaActual==='simple'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('simple')}>💰 Transacción Simple</button>
+        <button className={vistaActual==='movimientos'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('movimientos')}>📝 Movimientos</button>
+        <button className={vistaActual==='papelera'?'nav-btn activo':'nav-btn'} onClick={()=>cambiarVista('papelera')}>🗑️ Papelera</button>
+      </nav>
+      <div className="sidebar-footer"><button className="btn-logout" onClick={cerrarSesion}>Salir</button></div>
+    </aside>
+
+    <main className="panel-content">
+      <button className="menu-toggle" onClick={() => setMenuAbierto(true)}>☰ Menú Bodex</button>
+      <div className="modulo">
             <h2>🏢 Clientes Alquilados / Bodegas</h2>
             <p>Crea cuentas para tus clientes, controla sus estados (congelado por falta de pago) y gestiona fechas de cobro.</p>
 
