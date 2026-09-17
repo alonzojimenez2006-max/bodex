@@ -276,6 +276,27 @@ function App() {
 
   const detenerEscanner = () => { if (scannerRef.current) scannerRef.current.stop().catch(() => {}); setEscaneandoPOS(false); };
 
+  // --- NUEVAS FUNCIONES PARA ESCANEAR CÓDIGO AL CREAR PRODUCTO ---
+  const [escaneandoInv, setEscaneandoInv] = useState(false);
+  const scannerInvRef = useRef(null);
+
+  const iniciarEscannerInv = () => {
+    setEscaneandoInv(true);
+    setTimeout(() => {
+      const scanner = new Html5Qrcode("reader-inv");
+      scannerInvRef.current = scanner;
+      scanner.start(
+        { facingMode: "environment" }, { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          scanner.stop(); setEscaneandoInv(false);
+          setFormCrear(prev => ({...prev, codigo: decodedText})); // Guarda el código de barras real
+        }, () => {}
+      ).catch(() => { alert('No se pudo abrir cámara.'); setEscaneandoInv(false); });
+    }, 100);
+  };
+
+  const detenerEscannerInv = () => { if (scannerInvRef.current) scannerInvRef.current.stop().catch(() => {}); setEscaneandoInv(false); };
+
   const procesarVenta = async () => {
     if (carrito.length === 0) return alert('Carrito vacío');
     const detalle = carrito.map(i => ({ producto_id: i.id, cantidad: i.cantidad, precio_unitario: i.precio_venta }));
@@ -492,10 +513,23 @@ function App() {
             </div>
 
             {subInventario === 'crear' && (
-              <form onSubmit={crearProducto} className="grid-form">
-                <input type="text" placeholder="Código (Auto si vacío)" className="input-field" value={formCrear.codigo} onChange={e=>setFormCrear({...formCrear, codigo: e.target.value})}/>
-                <input type="text" placeholder="Nombre" className="input-field" value={formCrear.nombre} onChange={e=>setFormCrear({...formCrear, nombre: e.target.value})} required/>
-                <input type="number" placeholder="Stock" className="input-field" value={formCrear.stock} onChange={e=>setFormCrear({...formCrear, stock: e.target.value})} required/>
+          <form onSubmit={crearProducto} className="grid-form">
+
+            {/* Lector de cámara para guardar el código de barras real */}
+            {escaneandoInv && (
+              <div style={{ gridColumn: '1 / -1', background:'#000', padding:'10px', borderRadius:'8px', textAlign:'center' }}>
+                <div id="reader-inv" style={{width:'100%', maxWidth:'400px', margin:'0 auto'}}></div>
+                <button type="button" className="btn-quitar" style={{marginTop:'10px'}} onClick={detenerEscannerInv}>❌ Cancelar</button>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '10px', gridColumn: '1 / -1' }}>
+              <input type="text" placeholder="Código de Barras (Escanea o deja vacío)" className="input-field" value={formCrear.codigo} onChange={e=>setFormCrear({...formCrear, codigo: e.target.value})} style={{ flex: 1, marginBottom: 0 }}/>
+              <button type="button" className="btn-editar" onClick={escaneandoInv ? detenerEscannerInv : iniciarEscannerInv}>📷 Escanear</button>
+            </div>
+
+            <input type="text" placeholder="Nombre" className="input-field" value={formCrear.nombre} onChange={e=>setFormCrear({...formCrear, nombre: e.target.value})} required/>
+            <input type="number" placeholder="Stock" className="input-field" value={formCrear.stock} onChange={e=>setFormCrear({...formCrear, stock: e.target.value})} required/>
                 <input type="number" step="0.01" placeholder="Costo $" className="input-field" value={formCrear.precio_adquisicion} onChange={e=>setFormCrear({...formCrear, precio_adquisicion: e.target.value})} required/>
                 <input type="number" step="0.01" placeholder="Venta $" className="input-field" value={formCrear.precio_venta} onChange={e=>setFormCrear({...formCrear, precio_venta: e.target.value})} required/>
                 <button type="submit" className="btn-primary">Guardar</button>
@@ -579,37 +613,39 @@ function App() {
                 </select>
               </div>
               <ul className="lista-carrito" style={{ padding: 0, listStyle: 'none' }}>
-                {carrito.map(c => (
-                  <li key={c.id} style={{ background: '#fff', margin: '10px 0', padding: '15px', borderRadius: '10px', border: '1px solid #e0e0e0', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    
-                    {/* Fila 1: Nombre y Precio */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '15px', lineHeight: '1.2', maxWidth: '65%' }}>{c.nombre}</span>
-                      <div style={{ textAlign: 'right' }}>
-                        <span style={{ color: '#008060', fontWeight: 'bold', fontSize: '16px', display: 'block' }}>${(c.precio_venta * c.cantidad).toFixed(2)}</span>
-                        <span style={{ fontSize: '12px', color: '#888' }}>${c.precio_venta} c/u</span>
-                      </div>
-                    </div>
-                    
-                    {/* Fila 2: Controles de cantidad y botón eliminar */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
-                      
-                      {/* Agrupación estilo "pastilla" para - Cantidad + */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
-                        <button type="button" onClick={() => disminuirDelCarrito(c)} style={{ background: '#fbc02d', color: '#000', border: 'none', width: '34px', height: '34px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
-                        <span style={{ fontSize: '16px', fontWeight: 'bold', minWidth: '24px', textAlign: 'center' }}>{c.cantidad}</span>
-                        <button type="button" onClick={() => agregarAlCarrito(c)} style={{ background: '#4caf50', color: '#fff', border: 'none', width: '34px', height: '34px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
-                      </div>
-                      
-                      {/* Botón de eliminar más limpio */}
-                      <button type="button" onClick={() => eliminarDelCarrito(c)} style={{ background: '#ffebee', color: '#c62828', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                        🗑️ Quitar
-                      </button>
+            {carrito.map(c => (
+              <li key={c.id} style={{ background: '#fff', margin: '15px 0', padding: '18px', borderRadius: '12px', border: '1px solid #ddd', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                {/* PARTE SUPERIOR: Nombre y Precio Unitario */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontWeight: '900', fontSize: '18px', color: '#333', maxWidth: '70%', lineHeight: '1.2' }}>{c.nombre}</span>
+                    <span style={{ color: '#008060', fontWeight: '900', fontSize: '20px' }}>${(c.precio_venta * c.cantidad).toFixed(2)}</span>
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666', marginTop: '5px' }}>
+                    Monto por unidad: <b>${c.precio_venta}</b>
+                  </div>
+                </div>
+
+                {/* PARTE INFERIOR: Selectores de cantidad grandes y basurero */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', borderTop: '1px dashed #eee', paddingTop: '15px' }}>
+
+                  {/* Controles + y - */}
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#f0f0f0', borderRadius: '8px', padding: '5px' }}>
+                    <button type="button" onClick={() => disminuirDelCarrito(c)} style={{ background: '#fbc02d', color: '#000', border: 'none', width: '45px', height: '40px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                    <span style={{ fontSize: '20px', fontWeight: '900', width: '45px', textAlign: 'center' }}>{c.cantidad}</span>
+                    <button type="button" onClick={() => agregarAlCarrito(c)} style={{ background: '#4caf50', color: '#fff', border: 'none', width: '45px', height: '40px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+                  </div>
+
+                  {/* Botón Borrar completo */}
+                  <button type="button" onClick={() => eliminarDelCarrito(c)} style={{ background: '#ffebee', color: '#d32f2f', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    🗑️ Quitar
+                  </button>
+
+                </div>
+              </li>
+            ))}
+          </ul>
               <button onClick={procesarVenta} className="btn-cobrar">💳 COBRAR</button>
             </div>
           </div>
