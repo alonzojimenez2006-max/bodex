@@ -580,18 +580,32 @@ function App() {
               </div>
               <ul className="lista-carrito" style={{ padding: 0, listStyle: 'none' }}>
                 {carrito.map(c => (
-                  <li key={c.id} style={{ background: '#f9f9f9', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', marginBottom: '10px' }}>
-                      <span>{c.nombre}</span>
-                      <span style={{ color: '#008060' }}>${(c.precio_venta * c.cantidad).toFixed(2)}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '14px', color: '#555', fontWeight: 'bold' }}>Cant: {c.cantidad}</span>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button type="button" onClick={() => disminuirDelCarrito(c)} style={{ background: '#fbc02d', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>-</button>
-                        <button type="button" onClick={() => agregarAlCarrito(c)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>+</button>
-                        <button type="button" onClick={() => eliminarDelCarrito(c)} style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>🗑️</button>
+                  <li key={c.id} style={{ background: '#fff', margin: '10px 0', padding: '15px', borderRadius: '10px', border: '1px solid #e0e0e0', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                    
+                    {/* Fila 1: Nombre y Precio */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '15px', lineHeight: '1.2', maxWidth: '65%' }}>{c.nombre}</span>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ color: '#008060', fontWeight: 'bold', fontSize: '16px', display: 'block' }}>${(c.precio_venta * c.cantidad).toFixed(2)}</span>
+                        <span style={{ fontSize: '12px', color: '#888' }}>${c.precio_venta} c/u</span>
                       </div>
+                    </div>
+                    
+                    {/* Fila 2: Controles de cantidad y botón eliminar */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
+                      
+                      {/* Agrupación estilo "pastilla" para - Cantidad + */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f5f5f5', padding: '4px', borderRadius: '8px' }}>
+                        <button type="button" onClick={() => disminuirDelCarrito(c)} style={{ background: '#fbc02d', color: '#000', border: 'none', width: '34px', height: '34px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                        <span style={{ fontSize: '16px', fontWeight: 'bold', minWidth: '24px', textAlign: 'center' }}>{c.cantidad}</span>
+                        <button type="button" onClick={() => agregarAlCarrito(c)} style={{ background: '#4caf50', color: '#fff', border: 'none', width: '34px', height: '34px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+                      </div>
+                      
+                      {/* Botón de eliminar más limpio */}
+                      <button type="button" onClick={() => eliminarDelCarrito(c)} style={{ background: '#ffebee', color: '#c62828', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+                        🗑️ Quitar
+                      </button>
+
                     </div>
                   </li>
                 ))}
